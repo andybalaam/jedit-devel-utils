@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -x
+set -e
+
+function build()
+{
+    ant build || ant
+}
+
+function update_code()
+{
+    if ls -d .svn; then
+    {
+        svn update
+    }
+    else
+    {
+        git pull
+    }; fi
+}
+
+function sync_and_build_plugin()
+{
+    cd plugins/$1
+    update_code
+    build
+    cd ../..
+}
+
+cd jEdit
+#update_code
+#build
+cd ..
+
+PLUGINS="\
+    ErrorList \
+    CommonControls \
+    InfoViewer \
+    ProjectViewer \
+    Console \
+    BufferList \
+    FindFile \
+    GnuRegexp \
+    OpenIt \
+    RecentBufferSwitcher \
+    Sessions \
+    WhiteSpace \
+    RhinoPlugin \
+    jslint \
+"
+
+for F in $PLUGINS; do sync_and_build_plugin $F; done
+
+
